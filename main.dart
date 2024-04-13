@@ -69,7 +69,7 @@ class _ChatPageState extends State<ChatPage> {
     String url =
         'https://api.deepinfra.com/v1/inference/mistralai/Mixtral-8x7B-Instruct-v0.1';
     Map<String, String> headers = {
-      'Authorization': 'bearer t3daOZM1mBubVdSKDVak1rf3y0MS5jOL',
+      'Authorization': 'bearer t3daO1rf3y0MS5jOL',
       'Content-Type': 'application/json'
     };
 
