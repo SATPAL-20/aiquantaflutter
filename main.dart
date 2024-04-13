@@ -2,10 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:firebase_admob/firebase_admob.dart';
+import 'package:easy_audience_network/easy_audience_network.dart';
+import 'package:get/get.dart';
 
 void main() {
+  AdHelper.init();
   runApp(MyApp());
+}
+
+class AdHelper {
+  static void init() {
+    EasyAudienceNetwork.init(
+      testMode: true,
+    );
+  }
+
+  static void showInterstitialAd(VoidCallback onComplete) {
+    // Show loading
+    final interstitialAd = InterstitialAd(InterstitialAd.testPlacementId);
+
+    interstitialAd.listener = InterstitialAdListener(onLoaded: () {
+      //hide loading
+      Get.back();
+      onComplete();
+
+      interstitialAd.show();
+    }, onDismissed: () {
+      interstitialAd.destroy();
+    }, onError: (i, e) {
+      //hide loading
+      Get.back();
+      onComplete();
+    });
+
+    interstitialAd.load();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -29,19 +60,6 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   TextEditingController _controller = TextEditingController();
   List<Widget> messages = [];
-
-  RewardedVideoAd videoAd = RewardedVideoAd.instance;
-
-  void loadRewardedAd() {
-    videoAd.load(
-      adUnitId: RewardedVideoAd.testAdUnitId,
-      targetingInfo: MobileAdTargetingInfo(),
-    );
-  }
-
-  void showRewardedAd() {
-    videoAd.show();
-  }
 
   void sendMessage(String message) async {
     setState(() {
@@ -82,12 +100,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    loadRewardedAd();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +131,6 @@ class _ChatPageState extends State<ChatPage> {
                 IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () {
-                    showRewardedAd(); // Show rewarded ad
                     sendMessage(_controller.text);
                     _controller.clear();
                   },
